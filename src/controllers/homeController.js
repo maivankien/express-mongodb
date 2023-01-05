@@ -1,10 +1,10 @@
 const { json } = require('express');
 const connection = require('../config/database')
 const { getAllUsers, getUserById, updateUserById , deleteUserById} = require('../services/CRUDService')
-
+const User = require('../models/user')
 
 const getHomepage = async (req, res, next) => {
-    let results = await getAllUsers()
+    let results = await User.find({})
     return res.render('home', { listUsers: results })
 }
 
@@ -16,9 +16,13 @@ const postCreateUser = async (req, res) => {
     let email = req.body.email
     let name = req.body.name
     let city = req.body.city
-    let [results, fields] = await connection.query(
-        `INSERT INTO Users (email, name, city) VALUES (?, ?, ?)`, [email, name, city]
-    )
+  
+    await User.create({
+        email,
+        name,
+        city,
+    })
+
     res.send("Create new user")
 }
 
@@ -28,7 +32,8 @@ const getCreatePage = (req, res) => {
 
 const getUpdatePage = async (req, res) => {
     const userId = req.params.id
-    return res.render('edit', { userEdit: await getUserById(userId) })
+    let user = await User.findById(userId).exec()
+    return res.render('edit', { userEdit: user })
 }
 
 const postUpdateUser = async (req, res) => {
@@ -36,13 +41,18 @@ const postUpdateUser = async (req, res) => {
     let name = req.body.name
     let city = req.body.city
     let Id = req.body.userId
-    await updateUserById(email, name, city, Id)
+    await User.updateOne({_id: Id}, {
+        name: name,
+        email: email,
+        city: city,
+    })
     res.redirect('/')
 }
 
 const postDeleteUser = async (req, res) => {
     const userId = req.params.id
-    return res.render('delete', { userEdit: await getUserById(userId) })
+    let user = await User.findById(userId).exec()
+    return res.render('delete', { userEdit: user })
 }
 
 const postHandleRemoveUser = async (req, res) => {
@@ -50,7 +60,6 @@ const postHandleRemoveUser = async (req, res) => {
     await deleteUserById(Id)
     res.redirect('/')
 }
-
 
 module.exports = {
     getHomepage,

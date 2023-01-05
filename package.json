@@ -27,6 +27,7 @@
         "mysql2": "^2.3.3"
     },
     "devDependencies": {
+        "mongoose": "^6.8.2",
         "nodemon": "2.0.20"
     }
 }
