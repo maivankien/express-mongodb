@@ -1,7 +1,12 @@
 const express = require('express')
 const routerAPI = express.Router()
-const { getUsersAPI, postCreateUserAPI, putUpdateUserAPI, deleteUserAPI } = require('../controllers/apiController')
+const { getUsersAPI, postCreateUserAPI, putUpdateUserAPI, deleteUserAPI, postUploadSingleFileApi, postUploadMultipleFilesAPI }
+    = require('../controllers/apiController')
 
+const { postCreateCustomer, postCreateArrayCustomer, getAllCustomer, putUpdateCustomer, deleteACustomer, deleteArrCustomer }
+    = require('../controllers/customerController')
+
+const { postCreateProjects } = require('../controllers/projectController')
 
 routerAPI.get('/users', getUsersAPI)
 
@@ -11,5 +16,36 @@ routerAPI.put('/users', putUpdateUserAPI)
 
 routerAPI.delete('/users', deleteUserAPI)
 
+routerAPI.post('/file', postUploadSingleFileApi)
+
+routerAPI.post('/files', postUploadMultipleFilesAPI)
+
+// Customer
+
+routerAPI.post('/customer', postCreateCustomer)
+
+routerAPI.get('/customers', getAllCustomer)
+
+routerAPI.post('/customers-many', postCreateArrayCustomer)
+
+routerAPI.put('/customers', putUpdateCustomer)
+
+routerAPI.delete('/customers', deleteACustomer)
+
+routerAPI.delete('/customers-many', deleteArrCustomer)
+
+routerAPI.get('/info', (req, res) => {
+    return res.status(200).json({
+        data: req.query
+    })
+})
+
+routerAPI.get('/info/:name/:address', (req, res) => {
+    return res.status(200).json({
+        data: req.params
+    })
+})
+
+routerAPI.post('/projects', postCreateProjects)
 
 module.exports = routerAPI
