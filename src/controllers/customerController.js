@@ -1,33 +1,57 @@
-const path = require('path')
-const Customer = require('../models/customer')
+const Joi = require('joi')
 const { uploadSingleFile } = require('../services/fileService')
 const { createCustomerService, createArrayCustomerService, getAllCustomerService, putUpdateCustomerService, deleteACustomerService,
     deleteArrCustomerService }
     = require('../services/customerService')
+
 // key: value
 module.exports = {
     postCreateCustomer: async (req, res) => {
         let { name, address, phone, email, description } = req.body
 
-        let imageUrl = ''
+        // Validate Data
+        const schema = Joi.object({
+            name: Joi.string()
+                .alphanum()
+                .min(3)
+                .max(30)
+                .required(),
 
-        if (!req.files || Object.keys(req.files).length === 0) {
-            // Do nothing
-        }
-        else {
-            let result = await uploadSingleFile(req.files.image)
-            // imageUrl = path.resolve(__dirname, '../public/images/upload', result.path)
-            imageUrl = result.path
-        }
+            address: Joi.string(),
 
-        let customerData = {
-            name, address, phone, email, description, image: imageUrl,
-        }
-        let customer = await createCustomerService(customerData)
-        return res.status(200).json({
-            EC: 0,
-            data: customer
+            phone: Joi.string().pattern(new RegExp('^[0-9]{8,11}$')),
+
+            email: Joi.string().email(),
+
+            description: Joi.string(),
         })
+
+        const { error } = schema.validate(req.body, { abortEarly: false })
+        if (error) {
+            return res.status(200).json({
+                msg: error
+            })
+        } else {
+            let imageUrl = ''
+
+            if (!req.files || Object.keys(req.files).length === 0) {
+                // Do nothing
+            }
+            else {
+                let result = await uploadSingleFile(req.files.image)
+                // imageUrl = path.resolve(__dirname, '../public/images/upload', result.path)
+                imageUrl = result.path
+            }
+
+            let customerData = {
+                name, address, phone, email, description, image: imageUrl,
+            }
+            let customer = await createCustomerService(customerData)
+            return res.status(200).json({
+                EC: 0,
+                data: customer
+            })
+        }
     },
     postCreateArrayCustomer: async (req, res) => {
         let customer = await createArrayCustomerService(req.body.customers)
