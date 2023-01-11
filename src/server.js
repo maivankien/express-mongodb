@@ -39,17 +39,17 @@ app.use('/v1/api/', apiRoutes)
 
             // using mongodb driver
             // connection URl
-            const url = process.env.DB_HOST_WITH_DRIVER
-            const client = new MongoClient(url)
-            // Database Name
-            const dbName = process.env.DB_NAME
+            // const url = process.env.DB_HOST_WITH_DRIVER
+            // const client = new MongoClient(url)
+            // // Database Name
+            // const dbName = process.env.DB_NAME
 
-            await client.connect();
-            console.log('Connected successfully to server');
-            const db = client.db(dbName);
-            const collection = db.collection('customers')
+            // await client.connect();
+            // console.log('Connected successfully to server');
+            // const db = client.db(dbName);
+            // const collection = db.collection('customers')
 
-            let result = await collection.findOne({name: "maivankien"})
+            // let result = await collection.findOne({name: "maivankien"})
 
             app.listen(port, hostname, () => {
                 console.log(`Backend MongoDB app listening on port ${port}`)
